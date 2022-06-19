@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "652858361943",
+    "project_id": "booproject-7d3e3",
+    "storage_bucket": "booproject-7d3e3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652858361943:android:5baf5b1027ad9c78e4fb12",
+        "android_client_info": {
+          "package_name": "com.example.boo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "652858361943-5itlk82dsaukdb3afrnh8sn8f6kbfu35.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7hCUdAHtahT7XKzRlkorpT4znwuvRtkw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652858361943-5itlk82dsaukdb3afrnh8sn8f6kbfu35.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

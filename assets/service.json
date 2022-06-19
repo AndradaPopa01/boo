@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "boo-ltwt",
+  "private_key_id": "10da04ac98f89503e44491b5378797976b4f4e5b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCxgdE5KdcQzxD7\nYsyooRwgQQZLkoGqWSqE2z5A6Ngjl9D5ra1gidtUxd51YCzSYH6Tdnncfl9DvRgK\n9QmfItig4TzYikJhFEOKylDm6y3HLHuQlaCXJR1o6Z0JO7tjr9RHCKM3zn9lsYH9\nQj/T0l5xw3d3e+ueXkTKMHF5QlV0ePTfP9hBZvYwYpclcw+xnpZ+pOB9Thij6Gft\nmwxoa8jNXWhNIOOXF90b6SFuJ9BsG1rSo63R1D0d37CvhyRrLCImSf2npPTgpu8S\ne5DeGHkiJPP0724RceOGzXrbZug06rk/tw+t3xO1zTrjRDn9Spx0lYW7Ckse+q6l\n4F0aRrh1AgMBAAECgf98+yqVVSBYdXM/jREMqmNjUmVcUIt7pcyKPtRWX5vPc9Vv\n9xlcH7SOu8MmYdEtT0PQEFs9JL1utHV5QY7EvYRJwk1VKgQS1nG4BztvW6ef1XIr\nGy83PKq4c8Rd+/C0/9g3K53AbWTF9XXRHBRU0IovD7HOLzJ3D2jf87vx5QLGPjRz\nHDNQVxqoiWZfCCNtJaUzhvwv4O4Z4s6GIH/PLV4p+BkYfjnFI+77X5gnInG/0thX\nxgM2ITxCY7qou1x2vtDl+nRON04ziqYAJS407Z3OIg9Wr1anA25U+wqk2iI30qGF\nJYa4itIhkS5yY6NuwOi3Tn0IwUzlvKJVMO5cvNkCgYEA+HzyEiki9Hxh2yb+6VCl\nGk2VyQCgoQPk1rYLQmS3JDZMUTZvuGXE0Jow6XhKImBxJwcGKU6ntjItKGuWFtoc\nEY+bvwf8PtnOEn7o7I3PqoXVGXh8Pl4Bxvge4XxuRtvaOP0hDVnzhqWuXuajeRql\nrBDCVtOUCBRtIHLQHU8uI0kCgYEAtt+MaBx39lfXduM2ABdtIjigDCz7ailUTBub\nHkE8YVqVKAoir/ejtsNTRcVAmq6c7lJe4H62Av6xe8Tid3PL2bRxYhTxV1ep2gf4\npIYZetbl4aCsdHWDKp/ZvcP1wCODC6rva0JsvAo+XvwsLAMbwTW3Mq5OX/CUnKh7\ndVT5v80CgYEAwlJbsA4RcuZuVEbLpEPXyZkQ4M6nzyNPawWUCojem+gGiKAsgCS9\n5HAgfgP+3aFT+7RHgjgreZUFsY1pI1fQCX+nyZ2CCtijid1LY+qGkxD0FGYfq1oy\nw5m39JgtWSaHInf5yAonIo4grcBp6MQI+WVlxSbSpfrrWCvRSopoR1kCgYBzJ0mO\ntX6EzMOMxX5XiGjcR7PgduLJ8sR2OFvxLTsMQrHxyJAXJmUczNo+8PrBbHq9R3ke\n/Cs4r5CrU0sX1P7kU8+h53Yhfb4i4Socz6RzyaZv8XEm1GiICqhd6mtxVetLCZRB\ngk5eCkVEIp7eCAcOHvkBHOmVWDT8gMtdEulBcQKBgQDVUwKmPN8t4qIKdButfiyz\nz7254IuDwBF/6lBJHQERU8anAeVgUoTyFPgVYqhEsd2iUUIZZvfLgcaJLwakWBAn\nVGK0/zQ8TWO1rReahvORt+5Ud6MHOF39OX1b3dXsZoRe6Qs6QW5MQdpNiroIB+vS\nJk/zh3bdio1dJA4n9l1bcg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "boo-dialogflow@boo-ltwt.iam.gserviceaccount.com",
+  "client_id": "114955679482813326858",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/boo-dialogflow%40boo-ltwt.iam.gserviceaccount.com"
+}
