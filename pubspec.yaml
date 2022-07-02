@@ -39,6 +39,11 @@ dependencies:
   flutter_dialogflow:
   table_calendar: ^2.2.1
   shared_preferences: ^0.5.4+5
+  url_launcher:
+  font_awesome_flutter:
+  pie_chart:
+  flutter_fortune_wheel: ^0.4.2
+  rxdart:
 
 
 dev_dependencies:

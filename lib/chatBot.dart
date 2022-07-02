@@ -3,70 +3,103 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
-import 'package:boo/drawerMenu.dart';
+import 'package:boo/menu.dart';
+import 'package:boo/messageList.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatBot extends StatefulWidget {
-  const ChatBot({Key? key, required this.title}) : super(key: key);
-  final String title;
-
   @override
   State<ChatBot> createState() => _ChatBotState();
 }
 
 class _ChatBotState extends State<ChatBot> {
-  late SharedPreferences prefs;
+  late SharedPreferences preferences;
   late Map<DateTime, List<dynamic>> _events;
-  void response(query) async {
-    AuthGoogle authGoogle =
+  late Map<DateTime, List<dynamic>> _messages;
+  final messageController = TextEditingController();
+  var messsages = <Map>[];
+
+  Map<DateTime, dynamic> decode(Map<String, dynamic> map1) {
+    Map<DateTime, dynamic> map2 = {};
+    map1.forEach((key, value) {
+      map2[DateTime.parse(key)] = map1[key];
+    });
+    return map2;
+  }
+
+  Map<String, dynamic> encode(Map<DateTime, dynamic> map1) {
+    Map<String, dynamic> map2 = {};
+    map1.forEach((key, value) {
+      map2[key.toString()] = map1[key];
+    });
+    return map2;
+  }
+
+  getPreferencesMessages() async {
+    preferences = await SharedPreferences.getInstance();
+    setState(() {
+      _messages = Map<DateTime, List<dynamic>>.from(
+          decode(json.decode(preferences.getString("messages") ?? "{}")));
+    });
+  }
+
+  void reply(query) async {
+    AuthGoogle authentication =
         await AuthGoogle(fileJson: "assets/service.json").build();
-    Dialogflow dialogflow =
-        Dialogflow(authGoogle: authGoogle, language: Language.english);
-    AIResponse aiResponse = await dialogflow.detectIntent(query);
+    Dialogflow bot =
+        Dialogflow(authGoogle: authentication, language: Language.english);
+    AIResponse aiResponse = await bot.detectIntent(query);
     setState(() {
       messsages.insert(0, {
-        "data": 0,
+        "user": 0,
         "message": aiResponse.getListMessage()[0]["text"]["text"][0].toString()
       });
+
+      if (_messages[DateTime.now()] != null) {
+        _messages[DateTime.now()]!.add("0 " +
+            aiResponse.getListMessage()[0]["text"]["text"][0].toString());
+      } else {
+        _messages[DateTime.now()] = [
+          "0 " + aiResponse.getListMessage()[0]["text"]["text"][0].toString()
+        ];
+      }
+      preferences.setString("messages", json.encode(encode(_messages)));
     });
-
-    print(aiResponse.getListMessage()[0]["text"]["text"][0].toString());
   }
-
-  Map<DateTime, dynamic> decodeMap(Map<String, dynamic> map) {
-    Map<DateTime, dynamic> newMap = {};
-    map.forEach((key, value) {
-      newMap[DateTime.parse(key)] = map[key];
-    });
-    return newMap;
-  }
-
-  final messageInsert = TextEditingController();
-  var messsages = <Map>[];
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      prefs = await SharedPreferences.getInstance();
-      setState(() {});
-    });
     super.initState();
+    _messages = {};
+    getPreferencesMessages();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavigationDrawerWidget(),
+      drawer: Menu(),
       appBar: AppBar(
-        /*title: const Text(
-          "Chat bot",
-        ),*/
         title: Image.asset(
           'assets/Logo.png',
           fit: BoxFit.fitWidth,
           height: 40,
         ),
         backgroundColor: Color.fromARGB(255, 174, 136, 207),
+        actions: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => MessageList()));
+              },
+              child: Icon(
+                Icons.search,
+                size: 26.0,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Container(
         color: Color.fromARGB(255, 189, 170, 206),
@@ -80,12 +113,72 @@ class _ChatBotState extends State<ChatBot> {
               ),
             ),
             Flexible(
-                child: ListView.builder(
-                    reverse: true,
-                    itemCount: messsages.length,
-                    itemBuilder: (context, index) => chat(
-                        messsages[index]["message"].toString(),
-                        messsages[index]["data"]))),
+              child: ListView.builder(
+                reverse: true,
+                itemCount: messsages.length,
+                itemBuilder: (context, index) => Container(
+                  padding: EdgeInsets.only(left: 20, right: 20),
+                  child: Row(
+                    mainAxisAlignment: messsages[index]["user"] == 1
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
+                    children: [
+                      messsages[index]["user"] == 0
+                          ? Container(
+                              height: 60,
+                              width: 60,
+                              child: CircleAvatar(
+                                backgroundColor:
+                                    Color.fromARGB(255, 189, 170, 206),
+                                backgroundImage: AssetImage("assets/boo.png"),
+                              ),
+                            )
+                          : Container(),
+                      Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Bubble(
+                            radius: Radius.circular(15.0),
+                            color: messsages[index]["user"] == 0
+                                ? Color.fromARGB(255, 115, 171, 235)
+                                : Color.fromARGB(255, 203, 192, 110),
+                            elevation: 0.0,
+                            child: Padding(
+                              padding: EdgeInsets.all(2.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  SizedBox(
+                                    width: 10.0,
+                                  ),
+                                  Flexible(
+                                      child: Container(
+                                    constraints: BoxConstraints(maxWidth: 200),
+                                    child: Text(
+                                      messsages[index]["message"].toString(),
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ))
+                                ],
+                              ),
+                            )),
+                      ),
+                      messsages[index]["user"] == 1
+                          ? Container(
+                              height: 60,
+                              width: 60,
+                              child: CircleAvatar(
+                                backgroundImage:
+                                    AssetImage("assets/smiley.jpg"),
+                              ),
+                            )
+                          : Container(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
             SizedBox(
               height: 20,
             ),
@@ -98,20 +191,16 @@ class _ChatBotState extends State<ChatBot> {
                 title: Container(
                   height: 40,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    color: Color.fromRGBO(220, 220, 220, 1),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
                   padding: EdgeInsets.only(left: 15),
                   child: TextFormField(
-                    controller: messageInsert,
-                    decoration: InputDecoration(
-                      hintText: "Enter a message...",
-                      hintStyle: TextStyle(color: Colors.black26),
+                    controller: messageController,
+                    decoration: const InputDecoration(
                       border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
+                      hintText: "Say something...",
+                      hintStyle: TextStyle(color: Colors.black26),
                     ),
                     style: TextStyle(fontSize: 16, color: Colors.black),
                     onChanged: (value) {},
@@ -124,20 +213,32 @@ class _ChatBotState extends State<ChatBot> {
                       color: Color.fromARGB(255, 174, 136, 207),
                     ),
                     onPressed: () {
-                      if (messageInsert.text.isEmpty) {
+                      if (messageController.text.isEmpty) {
                         print("empty message");
-                      } else if (messageInsert.text.toLowerCase() ==
+                      } else if (messageController.text.toLowerCase() ==
                           "tell me my events for today") {
                         setState(() {
-                          messsages.insert(
-                              0, {"data": 1, "message": messageInsert.text});
+                          messsages.insert(0,
+                              {"user": 1, "message": messageController.text});
+
+                          if (_messages[DateTime.now()] != null) {
+                            _messages[DateTime.now()]!
+                                .add("1 " + messageController.text);
+                          } else {
+                            _messages[DateTime.now()] = [
+                              "1 " + messageController.text
+                            ];
+                          }
+                          preferences.setString(
+                              "messages", json.encode(encode(_messages)));
                         });
-                        messageInsert.clear();
+
+                        messageController.clear();
                         DateTime now = DateTime.now();
                         String currentDate =
                             now.toString().split(' ')[0] + ' 12:00:00.000Z';
-                        _events = Map<DateTime, List<dynamic>>.from(decodeMap(
-                            json.decode(prefs.getString("events") ?? "{}")));
+                        _events = Map<DateTime, List<dynamic>>.from(decode(json
+                            .decode(preferences.getString("events") ?? "{}")));
                         String message = 'You have the following events: ';
                         if (_events[DateTime.parse(currentDate)] != null &&
                             _events[DateTime.parse(currentDate)]!.isNotEmpty) {
@@ -151,24 +252,43 @@ class _ChatBotState extends State<ChatBot> {
 
                         setState(() {
                           messsages.insert(0, {
-                            "data": 0,
+                            "user": 0,
                             "message": message,
                           });
+
+                          if (_messages[DateTime.now()] != null) {
+                            _messages[DateTime.now()]!.add("0 " + message);
+                          } else {
+                            _messages[DateTime.now()] = ["0 " + message];
+                          }
+                          preferences.setString(
+                              "messages", json.encode(encode(_messages)));
                         });
                         print("ok");
-                      } else if (messageInsert.text.toLowerCase() ==
+                      } else if (messageController.text.toLowerCase() ==
                           "tell me my events for tomorrow") {
                         setState(() {
-                          messsages.insert(
-                              0, {"data": 1, "message": messageInsert.text});
+                          messsages.insert(0,
+                              {"user": 1, "message": messageController.text});
+
+                          if (_messages[DateTime.now()] != null) {
+                            _messages[DateTime.now()]!
+                                .add("0 " + messageController.text);
+                          } else {
+                            _messages[DateTime.now()] = [
+                              "0 " + messageController.text
+                            ];
+                          }
+                          preferences.setString(
+                              "messages", json.encode(encode(_messages)));
                         });
-                        messageInsert.clear();
+                        messageController.clear();
                         DateTime tomorrow =
                             DateTime.now().add(const Duration(days: 1));
                         String currentDate = tomorrow.toString().split(' ')[0] +
                             ' 12:00:00.000Z';
-                        _events = Map<DateTime, List<dynamic>>.from(decodeMap(
-                            json.decode(prefs.getString("events") ?? "{}")));
+                        _events = Map<DateTime, List<dynamic>>.from(decode(json
+                            .decode(preferences.getString("events") ?? "{}")));
                         String message = 'You have the following events: ';
                         if (_events[DateTime.parse(currentDate)] != null &&
                             _events[DateTime.parse(currentDate)]!.isNotEmpty) {
@@ -182,19 +302,39 @@ class _ChatBotState extends State<ChatBot> {
 
                         setState(() {
                           messsages.insert(0, {
-                            "data": 0,
+                            "user": 0,
                             "message": message,
                           });
+
+                          if (_messages[DateTime.now()] != null) {
+                            _messages[DateTime.now()]!.add("0 " + message);
+                          } else {
+                            _messages[DateTime.now()] = ["0 " + message];
+                          }
+                          preferences.setString(
+                              "messages", json.encode(encode(_messages)));
                         });
                         print("ok");
                       } else {
                         setState(() {
-                          messsages.insert(
-                              0, {"data": 1, "message": messageInsert.text});
+                          messsages.insert(0,
+                              {"user": 1, "message": messageController.text});
+
+                          if (_messages[DateTime.now()] != null) {
+                            _messages[DateTime.now()]!
+                                .add("1 " + messageController.text);
+                          } else {
+                            _messages[DateTime.now()] = [
+                              "1 " + messageController.text
+                            ];
+                          }
+                          preferences.setString(
+                              "messages", json.encode(encode(_messages)));
                         });
-                        response(messageInsert.text);
-                        messageInsert.clear();
+                        reply(messageController.text);
+                        messageController.clear();
                       }
+
                       FocusScopeNode currentFocus = FocusScope.of(context);
                       if (!currentFocus.hasPrimaryFocus) {
                         currentFocus.unfocus();
@@ -207,66 +347,6 @@ class _ChatBotState extends State<ChatBot> {
             )
           ],
         ),
-      ),
-    );
-  }
-
-  Widget chat(String message, int data) {
-    return Container(
-      padding: EdgeInsets.only(left: 20, right: 20),
-      child: Row(
-        mainAxisAlignment:
-            data == 1 ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          data == 0
-              ? Container(
-                  height: 60,
-                  width: 60,
-                  child: CircleAvatar(
-                    backgroundColor: Color.fromARGB(255, 189, 170, 206),
-                    backgroundImage: AssetImage("assets/boo.png"),
-                  ),
-                )
-              : Container(),
-          Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Bubble(
-                radius: Radius.circular(15.0),
-                color: data == 0
-                    ? Color.fromARGB(255, 115, 171, 235)
-                    : Color.fromARGB(255, 203, 192, 110),
-                elevation: 0.0,
-                child: Padding(
-                  padding: EdgeInsets.all(2.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 10.0,
-                      ),
-                      Flexible(
-                          child: Container(
-                        constraints: BoxConstraints(maxWidth: 200),
-                        child: Text(
-                          message,
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                      ))
-                    ],
-                  ),
-                )),
-          ),
-          data == 1
-              ? Container(
-                  height: 60,
-                  width: 60,
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage("assets/smiley.jpg"),
-                  ),
-                )
-              : Container(),
-        ],
       ),
     );
   }
